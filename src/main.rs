@@ -26,7 +26,7 @@ fn main() {
             }
 
         }
-        //read primes from segment and push into
+        //read primes from segment and push into permanent storage
         for i in 1..SEGMENT_SIZE as usize {
             if segment[i] {
                 primes.push(i);
