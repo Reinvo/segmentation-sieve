@@ -1,10 +1,9 @@
 fn main() {
 
-    const SEGMENT_SIZE: usize = 65536; //size of the segment
+    const SEGMENT_SIZE: usize = 4194304; //size of the segment
 
     let mut primes: Vec<u64> = Vec::new(); // the vector which stores primes of previous sectors
     let mut offset:     u64  = 0;          // the offset of the current sector
-
 
     {   //first run to establish the first segment of primes
         //creates segment
@@ -20,7 +19,7 @@ fn main() {
 
             for j in i..SEGMENT_SIZE/i+1 {
 
-                if j*i >= SEGMENT_SIZE { continue; } // skips if number is not in the segment
+                if j*i >= SEGMENT_SIZE { break; } // skips if number is not in the segment
 
                 segment[i*j]=false;
 
@@ -31,7 +30,7 @@ fn main() {
         for i in 1..SEGMENT_SIZE {
             if segment[i] {
                 primes.push(i as u64);
-                println!("{}",i);
+                //println!("{}",i);
             }
         }
 
@@ -46,9 +45,11 @@ fn main() {
 
         // uses all known primes from previous runs to calculate non-primes
         for i in &primes {
+            if i*i >= SEGMENT_SIZE as u64 + offset {break}
             for j in ( offset/ i)..( SEGMENT_SIZE as u64 + offset ) / i +1 {
 
-                if i*j<offset || i*j >= offset+SEGMENT_SIZE as u64 { continue } //skip if value isn't in the segment
+                if i*j >= offset+SEGMENT_SIZE as u64 {break}
+                if i*j<offset { continue } //skip if value isn't in the segment
 
                 segment[(i*j-offset) as usize]=false;
 
@@ -59,12 +60,10 @@ fn main() {
         //reads primes from segment, pushes them into the storage
         for i in 1..SEGMENT_SIZE {
             if segment[i] {
-                primes.push(i as u64+offset );
-                println!("{}",i as u64+offset );
+                primes.push(i as u64+offset);
             }
         }
-
-
+        print!("{}",primes[primes.len()-1]);
         offset = offset + SEGMENT_SIZE as u64;
 
         /*
